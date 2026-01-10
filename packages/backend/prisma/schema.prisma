@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// User model for authentication
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  name          String?
+  refreshTokens RefreshToken[]
+  videos        Video[]
+  highlights    Highlight[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([email])
+}
+
+// Refresh tokens for JWT rotation
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+// Video uploads and metadata
+model Video {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename      String
+  originalName  String
+  path          String
+  duration      Float?
+  size          BigInt
+  mimeType      String
+  status        VideoStatus     @default(UPLOADING)
+  thumbnailPath String?
+  clips         Clip[]
+  highlights    HighlightClip[]
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Video clips with transcripts and embeddings
+model Clip {
+  id         String          @id @default(uuid())
+  videoId    String
+  video      Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  startTime  Float
+  endTime    Float
+  transcript String?         @db.Text
+  speaker    String?
+  emotion    String?
+  action     String?
+  embedding  Bytes?          @db.LongBlob
+  highlights HighlightClip[]
+  createdAt  DateTime        @default(now())
+
+  @@index([videoId])
+}
+
+// Highlight reel collections
+model Highlight {
+  id         String          @id @default(uuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  clips      HighlightClip[]
+  outputPath String?
+  status     HighlightStatus @default(PENDING)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Clips within a highlight reel
+model HighlightClip {
+  id          String    @id @default(uuid())
+  highlightId String
+  highlight   Highlight @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  clipId      String?
+  clip        Clip?     @relation(fields: [clipId], references: [id], onDelete: SetNull)
+  videoId     String?
+  video       Video?    @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  order       Int
+  startTime   Float
+  endTime     Float
+
+  @@index([highlightId])
+  @@index([clipId])
+}
+
+// Upload session tracking
+model UploadSession {
+  id           String   @id @default(uuid())
+  userId       String
+  filename     String
+  originalName String
+  mimeType     String
+  size         BigInt
+  uploadedSize BigInt   @default(0)
+  path         String
+  status       String   @default("pending")
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Video processing status enum
+enum VideoStatus {
+  UPLOADING
+  PROCESSING
+  TRANSCRIBING
+  EMBEDDING
+  READY
+  FAILED
+}
+
+// Highlight generation status enum
+enum HighlightStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}

@@ -1,0 +1,183 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: vhg-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-video_highlight_db}
+      MYSQL_USER: ${MYSQL_USER:-vhg_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-vhg_password}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - vhg-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for BullMQ Job Queue
+  redis:
+    image: redis:7-alpine
+    container_name: vhg-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vhg-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Whisper.cpp for Speech-to-Text
+  whisper:
+    build:
+      context: ./docker/whisper
+      dockerfile: Dockerfile
+    container_name: vhg-whisper
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads:ro
+      - whisper_models:/app/models
+    networks:
+      - vhg-network
+    environment:
+      - WHISPER_MODEL=${WHISPER_MODEL:-base.en}
+
+  # FFmpeg Processing Container
+  ffmpeg:
+    build:
+      context: ./docker/ffmpeg
+      dockerfile: Dockerfile
+    container_name: vhg-ffmpeg
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
+      - ./output:/app/output
+    networks:
+      - vhg-network
+
+  # Backend API Service (Development)
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile.dev
+    container_name: vhg-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./packages/backend:/app
+      - ./packages/shared:/shared
+      - ./uploads:/app/uploads
+      - ./output:/app/output
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mysql://${MYSQL_USER:-vhg_user}:${MYSQL_PASSWORD:-vhg_password}@mysql:3306/${MYSQL_DATABASE:-video_highlight_db}
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=${MYSQL_USER:-vhg_user}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD:-vhg_password}
+      - DATABASE_NAME=${MYSQL_DATABASE:-video_highlight_db}
+      - REDIS_URL=redis://redis:6379
+      - WHISPER_API_URL=http://whisper:8080
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change-me-in-production}
+      - TRANSCRIPTION_PROVIDER=${TRANSCRIPTION_PROVIDER:-whisper}
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-transformers}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    command: npm run dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - vhg-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  # Worker Service (Development)
+  # Runs background workers for video processing, embeddings, and highlights
+  worker:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile.dev
+    container_name: vhg-worker
+    restart: unless-stopped
+    volumes:
+      - ./packages/backend:/app
+      - ./packages/shared:/shared
+      - ./uploads:/app/uploads
+      - ./output:/app/output
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mysql://${MYSQL_USER:-vhg_user}:${MYSQL_PASSWORD:-vhg_password}@mysql:3306/${MYSQL_DATABASE:-video_highlight_db}
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=${MYSQL_USER:-vhg_user}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD:-vhg_password}
+      - DATABASE_NAME=${MYSQL_DATABASE:-video_highlight_db}
+      - REDIS_URL=redis://redis:6379
+      - WHISPER_API_URL=http://whisper:8080
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change-me-in-production}
+      - TRANSCRIPTION_PROVIDER=${TRANSCRIPTION_PROVIDER:-whisper}
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-transformers}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    command: npm run worker:dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - vhg-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  # Frontend Service (Development)
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile.dev
+    container_name: vhg-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./packages/frontend:/app
+      - ./packages/shared:/shared
+      - /app/node_modules
+    environment:
+      # Don't set VITE_API_URL - let it use the Vite proxy (/api -> http://backend:3001)
+      - VITE_PROXY_TARGET=http://backend:3001
+    depends_on:
+      - backend
+    networks:
+      - vhg-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  whisper_models:
+
+
+networks:
+  vhg-network:
+    driver: bridge

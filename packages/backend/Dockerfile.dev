@@ -1,0 +1,28 @@
+FROM node:20
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    python3 \
+    make \
+    g++ \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source files (mounted in development)
+COPY . .
+
+# Generate Prisma client
+RUN DATABASE_URL=mysql://localhost:3306/db npx prisma generate
+
+# Expose port
+EXPOSE 3001
+
+# Start development server
+CMD ["npm", "run", "dev"]

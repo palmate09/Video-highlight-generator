@@ -1,0 +1,21 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+RUN npm install
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Create entrypoint script to ensure packages are installed
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'npm install' >> /entrypoint.sh && \
+    echo 'exec "$@"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Start development server with host flag
+CMD ["npm", "run", "dev", "--", "--host"]
