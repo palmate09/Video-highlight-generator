@@ -52,3 +52,13 @@ export type HighlightClip = Prisma.HighlightClipModel
  * 
  */
 export type UploadSession = Prisma.UploadSessionModel
+/**
+ * Model YouTubeVideo
+ * 
+ */
+export type YouTubeVideo = Prisma.YouTubeVideoModel
+/**
+ * Model YouTubeClip
+ * 
+ */
+export type YouTubeClip = Prisma.YouTubeClipModel

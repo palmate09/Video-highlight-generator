@@ -18,6 +18,7 @@ model User {
   highlights    Highlight[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  youTubeVideos YouTubeVideo[]
 
   @@index([email])
 }
@@ -94,16 +95,18 @@ model Highlight {
 
 // Clips within a highlight reel
 model HighlightClip {
-  id          String    @id @default(uuid())
-  highlightId String
-  highlight   Highlight @relation(fields: [highlightId], references: [id], onDelete: Cascade)
-  clipId      String?
-  clip        Clip?     @relation(fields: [clipId], references: [id], onDelete: SetNull)
-  videoId     String?
-  video       Video?    @relation(fields: [videoId], references: [id], onDelete: SetNull)
-  order       Int
-  startTime   Float
-  endTime     Float
+  id            String       @id @default(uuid())
+  highlightId   String
+  highlight     Highlight    @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  clipId        String?
+  clip          Clip?        @relation(fields: [clipId], references: [id], onDelete: SetNull)
+  videoId       String?
+  video         Video?       @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  youtubeClipId String?
+  youtubeClip   YouTubeClip? @relation(fields: [youtubeClipId], references: [id], onDelete: SetNull)
+  order         Int
+  startTime     Float
+  endTime       Float
 
   @@index([highlightId])
   @@index([clipId])
@@ -144,4 +147,37 @@ enum HighlightStatus {
   PROCESSING
   READY
   FAILED
+}
+
+// YouTube video for clip generation (no download)
+model YouTubeVideo {
+  id        String        @id @default(uuid())
+  videoId   String // YouTube video ID (11 chars)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  clips     YouTubeClip[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([videoId, userId])
+  @@index([userId])
+  @@index([videoId])
+}
+
+// YouTube clip (timestamp-based, no file storage)
+model YouTubeClip {
+  id             String          @id @default(uuid())
+  youtubeVideoId String
+  youtubeVideo   YouTubeVideo    @relation(fields: [youtubeVideoId], references: [id], onDelete: Cascade)
+  startTime      Float
+  endTime        Float
+  label          String          @db.Text
+  confidence     Float
+  transcript     String?         @db.Text
+  order          Int             @default(0)
+  createdAt      DateTime        @default(now())
+  highlights     HighlightClip[]
+
+  @@index([youtubeVideoId])
 }

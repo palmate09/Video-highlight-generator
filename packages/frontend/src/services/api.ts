@@ -141,6 +141,7 @@ export const highlightApi = {
         clips: Array<{
             clipId?: string;
             videoId?: string;
+            youtubeClipId?: string;
             startTime: number;
             endTime: number;
         }>;
@@ -150,3 +151,45 @@ export const highlightApi = {
 
     getDownloadUrl: (id: string) => api.get(`/highlights/${id}/download`),
 };
+
+// YouTube API - Clip generation without downloading
+export const youtubeApi = {
+    // Analyze a YouTube video and generate clips
+    analyzeVideo: (data: {
+        url: string;
+        minClipDuration?: number;
+        maxClipDuration?: number;
+        maxClips?: number;
+    }) => api.post('/youtube/analyze', data),
+
+    // Save generated clips to user account
+    saveClips: (data: {
+        videoId: string;
+        title?: string;
+        clips: Array<{
+            start: number;
+            end: number;
+            label: string;
+            confidence: number;
+            transcript?: string;
+        }>;
+    }) => api.post('/youtube/clips', data),
+
+    // Get all saved YouTube videos
+    getVideos: (params?: { page?: number; limit?: number }) =>
+        api.get('/youtube/videos', { params }),
+
+    // Get a specific YouTube video with its clips
+    getVideo: (id: string) => api.get(`/youtube/videos/${id}`),
+
+    // Delete a YouTube video
+    deleteVideo: (id: string) => api.delete(`/youtube/videos/${id}`),
+
+    // Update a clip
+    updateClip: (id: string, data: { label?: string; startTime?: number; endTime?: number }) =>
+        api.patch(`/youtube/clips/${id}`, data),
+
+    // Delete a clip
+    deleteClip: (id: string) => api.delete(`/youtube/clips/${id}`),
+};
+

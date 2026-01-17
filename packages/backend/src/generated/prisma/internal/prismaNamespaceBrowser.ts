@@ -57,7 +57,9 @@ export const ModelName = {
   Clip: 'Clip',
   Highlight: 'Highlight',
   HighlightClip: 'HighlightClip',
-  UploadSession: 'UploadSession'
+  UploadSession: 'UploadSession',
+  YouTubeVideo: 'YouTubeVideo',
+  YouTubeClip: 'YouTubeClip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -152,6 +154,7 @@ export const HighlightClipScalarFieldEnum = {
   highlightId: 'highlightId',
   clipId: 'clipId',
   videoId: 'videoId',
+  youtubeClipId: 'youtubeClipId',
   order: 'order',
   startTime: 'startTime',
   endTime: 'endTime'
@@ -176,6 +179,33 @@ export const UploadSessionScalarFieldEnum = {
 } as const
 
 export type UploadSessionScalarFieldEnum = (typeof UploadSessionScalarFieldEnum)[keyof typeof UploadSessionScalarFieldEnum]
+
+
+export const YouTubeVideoScalarFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId',
+  title: 'title',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type YouTubeVideoScalarFieldEnum = (typeof YouTubeVideoScalarFieldEnum)[keyof typeof YouTubeVideoScalarFieldEnum]
+
+
+export const YouTubeClipScalarFieldEnum = {
+  id: 'id',
+  youtubeVideoId: 'youtubeVideoId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  label: 'label',
+  confidence: 'confidence',
+  transcript: 'transcript',
+  order: 'order',
+  createdAt: 'createdAt'
+} as const
+
+export type YouTubeClipScalarFieldEnum = (typeof YouTubeClipScalarFieldEnum)[keyof typeof YouTubeClipScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -277,7 +307,8 @@ export const HighlightClipOrderByRelevanceFieldEnum = {
   id: 'id',
   highlightId: 'highlightId',
   clipId: 'clipId',
-  videoId: 'videoId'
+  videoId: 'videoId',
+  youtubeClipId: 'youtubeClipId'
 } as const
 
 export type HighlightClipOrderByRelevanceFieldEnum = (typeof HighlightClipOrderByRelevanceFieldEnum)[keyof typeof HighlightClipOrderByRelevanceFieldEnum]
@@ -294,4 +325,24 @@ export const UploadSessionOrderByRelevanceFieldEnum = {
 } as const
 
 export type UploadSessionOrderByRelevanceFieldEnum = (typeof UploadSessionOrderByRelevanceFieldEnum)[keyof typeof UploadSessionOrderByRelevanceFieldEnum]
+
+
+export const YouTubeVideoOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId',
+  title: 'title'
+} as const
+
+export type YouTubeVideoOrderByRelevanceFieldEnum = (typeof YouTubeVideoOrderByRelevanceFieldEnum)[keyof typeof YouTubeVideoOrderByRelevanceFieldEnum]
+
+
+export const YouTubeClipOrderByRelevanceFieldEnum = {
+  id: 'id',
+  youtubeVideoId: 'youtubeVideoId',
+  label: 'label',
+  transcript: 'transcript'
+} as const
+
+export type YouTubeClipOrderByRelevanceFieldEnum = (typeof YouTubeClipOrderByRelevanceFieldEnum)[keyof typeof YouTubeClipOrderByRelevanceFieldEnum]
 

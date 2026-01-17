@@ -9,9 +9,29 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-WHISPER_BIN = os.environ.get('WHISPER_BIN', '/app/whisper.cpp/build/bin/main')
+# Use whisper-cli instead of deprecated 'main' binary
+# Try whisper-cli first, fall back to main if not found
+WHISPER_CLI_PATH = '/app/whisper.cpp/build/bin/whisper-cli'
+WHISPER_MAIN_PATH = '/app/whisper.cpp/build/bin/main'
+WHISPER_BIN = os.environ.get('WHISPER_BIN', WHISPER_CLI_PATH if os.path.exists(WHISPER_CLI_PATH) else WHISPER_MAIN_PATH)
 WHISPER_MODEL = os.environ.get('WHISPER_MODEL', 'base.en')
 MODEL_PATH = f'/app/models/ggml-{WHISPER_MODEL}.bin'
+
+def filter_warnings(text):
+    """Remove deprecation and warning messages from whisper output"""
+    if not text:
+        return text
+    lines = text.split('\n')
+    filtered_lines = []
+    for line in lines:
+        # Skip deprecation warnings and common noise
+        if any(skip in line for skip in [
+            'WARNING:', 'deprecated', 'whisper-cli', 
+            'deprecation-warning', 'Please use', 'See https://'
+        ]):
+            continue
+        filtered_lines.append(line)
+    return '\n'.join(filtered_lines).strip()
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -61,10 +81,12 @@ def transcribe():
             os.remove(json_output_path)
         else:
             # Parse text output if JSON not available
+            # Filter out deprecation warnings from stdout
+            clean_text = filter_warnings(result.stdout.strip())
             transcript_data = {
                 'transcription': [{
                     'timestamps': {'from': '00:00:00', 'to': '00:00:00'},
-                    'text': result.stdout.strip()
+                    'text': clean_text
                 }]
             }
         
@@ -77,11 +99,14 @@ def transcribe():
         segments = []
         for item in transcript_data.get('transcription', []):
             timestamps = item.get('timestamps', {})
-            segments.append({
-                'start': parse_timestamp(timestamps.get('from', '00:00:00')),
-                'end': parse_timestamp(timestamps.get('to', '00:00:00')),
-                'text': item.get('text', '').strip()
-            })
+            # Filter warnings from segment text as well
+            segment_text = filter_warnings(item.get('text', '').strip())
+            if segment_text:  # Only add non-empty segments
+                segments.append({
+                    'start': parse_timestamp(timestamps.get('from', '00:00:00')),
+                    'end': parse_timestamp(timestamps.get('to', '00:00:00')),
+                    'text': segment_text
+                })
         
         return jsonify({
             'success': True,

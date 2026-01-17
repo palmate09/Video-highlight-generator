@@ -56,11 +56,41 @@ export const videoWorker = new Worker<VideoJobData>(
                 data: { status: 'PROCESSING' },
             });
 
-            // Parallelize metadata extraction and thumbnail generation for speed
+            // Step 1: Check if video needs transcoding to web-compatible format
+            let currentVideoPath = videoPath;
+            if (processingService.needsTranscoding(videoPath, video.mimeType)) {
+                logger.info(`Video ${videoId} needs transcoding to MP4 for web compatibility`);
+                try {
+                    const { outputPath, filename } = await processingService.transcodeToMp4(videoPath, videoId);
+                    currentVideoPath = outputPath;
+
+                    // Update video record with new path and filename
+                    await prisma.video.updateMany({
+                        where: { id: videoId },
+                        data: {
+                            path: outputPath,
+                            filename: filename,
+                            mimeType: 'video/mp4',
+                        },
+                    });
+                    logger.info(`Video ${videoId} transcoded successfully, updated path to: ${outputPath}`);
+                } catch (transcodeError: any) {
+                    logger.error(`Transcoding failed for video ${videoId}: ${transcodeError.message}`);
+                    await prisma.video.updateMany({
+                        where: { id: videoId },
+                        data: { status: 'FAILED' },
+                    });
+                    throw new Error(`Transcoding failed: ${transcodeError.message}`);
+                }
+            }
+
+            await job.updateProgress(10);
+
+            // Step 2: Parallelize metadata extraction and thumbnail generation for speed
             logger.info(`Extracting video metadata and generating thumbnail: ${videoId}`);
             const [metadata, thumbnailPath] = await Promise.all([
-                processingService.getVideoMetadata(videoPath),
-                processingService.generateThumbnail(videoId, videoPath),
+                processingService.getVideoMetadata(currentVideoPath),
+                processingService.generateThumbnail(videoId, currentVideoPath),
             ]);
             logger.info(`Video metadata extracted: duration=${metadata.duration}s, resolution=${metadata.width}x${metadata.height}, fps=${metadata.fps.toFixed(2)}`);
 
@@ -84,26 +114,37 @@ export const videoWorker = new Worker<VideoJobData>(
                 return;
             }
 
-            // Optimize scene detection: Skip for short videos (< 30 seconds), use fast detection for longer videos
-            let scenes: number[];
+            // Parallel processing: Scene Detection AND Transcription
             const SHORT_VIDEO_THRESHOLD = 30; // 30 seconds
-            
+
+            logger.info(`Starting parallel processing (Scene Detection + Transcription) for video: ${videoId}`);
+            const processingStart = Date.now();
+
+            // 1. Kick off transcription (async)
+            // We don't await this yet - let it run in parallel with scene detection
+            const transcriptionPromise = (async () => {
+                logger.info(`Starting transcription for full video: ${videoId}`);
+                // Update status to TRANSCRIBING to let user know we are working on it
+                await prisma.video.updateMany({
+                    where: { id: videoId },
+                    data: { status: 'TRANSCRIBING' },
+                });
+                return processingService.transcribeFullVideo(currentVideoPath);
+            })();
+
+            // 2. Run Scene Detection synchronously (awaited)
+            let scenes: number[] = [];
             if (metadata.duration <= SHORT_VIDEO_THRESHOLD) {
-                // For short videos, skip scene detection - just use start and end
-                logger.info(`Video is short (${metadata.duration.toFixed(2)}s <= ${SHORT_VIDEO_THRESHOLD}s), skipping scene detection`);
+                logger.info(`Video is short (${metadata.duration.toFixed(2)}s), skipping scene detection`);
                 scenes = [0, metadata.duration];
             } else {
-                // For longer videos, use optimized scene detection
-                logger.info(`Detecting scenes in video: ${videoId} (duration: ${metadata.duration.toFixed(2)}s)`);
-                const sceneDetectionStart = Date.now();
-                scenes = await processingService.detectScenes(videoPath, metadata.duration);
-                const sceneDetectionTime = ((Date.now() - sceneDetectionStart) / 1000).toFixed(2);
-                logger.info(`Detected ${scenes.length} scenes in ${sceneDetectionTime}s for video ${videoId}`);
+                logger.info(`Detecting scenes in video: ${videoId}`);
+                scenes = await processingService.detectScenes(currentVideoPath, metadata.duration);
+                logger.info(`Detected ${scenes.length} scenes`);
             }
 
-            await job.updateProgress(40);
-
-            // Create clips for each scene
+            // 3. Create Clips IMMEDIATELY after scene detection
+            // This allows the user to see clips even if transcription is still running
             logger.info(`Creating clips from ${scenes.length} scenes for video: ${videoId}`);
             const clips = await processingService.createClipsFromScenes(
                 videoId,
@@ -112,19 +153,15 @@ export const videoWorker = new Worker<VideoJobData>(
             );
             logger.info(`Created ${clips.length} clips for video: ${videoId}`);
 
-            // Update status to TRANSCRIBING
-            await prisma.video.updateMany({
-                where: { id: videoId },
-                data: { status: 'TRANSCRIBING' },
-            });
+            // 4. Wait for Transcription to complete
+            const transcription = await transcriptionPromise;
 
-            // Transcribe whole video once
-            await job.updateProgress(60);
-            logger.info(`Starting transcription for full video: ${videoId} (duration: ${metadata.duration.toFixed(2)}s)`);
-            const transcriptionStart = Date.now();
-            const transcription = await processingService.transcribeFullVideo(videoPath);
-            const transcriptionTime = ((Date.now() - transcriptionStart) / 1000).toFixed(2);
+            const processingTime = ((Date.now() - processingStart) / 1000).toFixed(2);
+            logger.info(`Parallel processing completed in ${processingTime}s`);
+
             await job.updateProgress(80);
+
+            const transcriptionTime = processingTime; // Approximation for compatibility with logging below
 
             if (!transcription.segments || transcription.segments.length === 0) {
                 logger.warn(`No transcription segments found for video: ${videoId} after ${transcriptionTime}s`);
@@ -145,7 +182,7 @@ export const videoWorker = new Worker<VideoJobData>(
 
             // Process clips to extract transcripts
             const clipTranscripts: Array<{ clipId: string; transcript: string; hasTranscript: boolean }> = [];
-            
+
             for (const clip of clips) {
                 const overlappingSegments = (transcription.segments || [])
                     .filter((s: any) => {
@@ -183,7 +220,7 @@ export const videoWorker = new Worker<VideoJobData>(
             }
 
             const clipsWithTranscript = clipTranscripts.filter(c => c.hasTranscript);
-            
+
             // Optimize: For short videos or small number of clips, process embeddings in batch
             // This is MUCH faster than queuing individually (especially for Transformers.js)
             const SHORT_VIDEO_CLIP_THRESHOLD = 10; // Process in batch if <= 10 clips
@@ -196,45 +233,45 @@ export const videoWorker = new Worker<VideoJobData>(
                 try {
                     // Extract transcripts for batch processing
                     const transcripts = clipsWithTranscript.map(c => c.transcript);
-                    
+
                     // Validate transcripts before processing
                     if (!transcripts || transcripts.length === 0) {
                         logger.warn(`No transcripts to embed for video ${videoId}`);
                         await checkVideoCompletion(videoId);
                         return;
                     }
-                    
+
                     // Generate all embeddings in one batch call with timeout
                     // Reduced timeout for short videos - should be much faster if model is pre-loaded
                     const BATCH_EMBEDDING_TIMEOUT = 30000; // 30 seconds timeout (reduced from 2 min)
                     logger.debug(`Starting batch embedding generation for ${transcripts.length} transcripts`);
                     const embeddingsPromise = processingService.generateEmbeddingsBatch(transcripts);
-                    const timeoutPromise = new Promise((_, reject) => 
+                    const timeoutPromise = new Promise((_, reject) =>
                         setTimeout(() => reject(new Error('Batch embedding timeout')), BATCH_EMBEDDING_TIMEOUT)
                     );
-                    
+
                     const embeddings = await Promise.race([embeddingsPromise, timeoutPromise]) as number[][];
                     logger.debug(`Batch embedding generation completed for ${embeddings.length} embeddings`);
-                    
+
                     // Validate embeddings array length matches clips
                     if (!embeddings || embeddings.length !== clipsWithTranscript.length) {
                         throw new Error(`Embedding count mismatch: expected ${clipsWithTranscript.length}, got ${embeddings?.length || 0}`);
                     }
-                    
+
                     // Update all clips with embeddings in parallel
                     await Promise.all(
                         clipsWithTranscript.map(async (clipData, index) => {
                             try {
                                 const embedding = embeddings[index];
-                                
+
                                 // Validate embedding exists and is valid
                                 if (!embedding || !Array.isArray(embedding) || embedding.length === 0) {
                                     logger.warn(`Invalid embedding for clip ${clipData.clipId} at index ${index}`);
                                     return;
                                 }
-                                
+
                                 const embeddingBuffer = Buffer.from(new Float32Array(embedding).buffer);
-                                
+
                                 await prisma.clip.updateMany({
                                     where: { id: clipData.clipId },
                                     data: { embedding: embeddingBuffer },
@@ -257,7 +294,7 @@ export const videoWorker = new Worker<VideoJobData>(
                         videoId,
                         clipCount: clipsWithTranscript.length,
                     });
-                    
+
                     // Fallback to individual processing if batch fails
                     logger.info(`Falling back to individual embedding processing for ${clipsWithTranscript.length} clips`);
                     let queuedCount = 0;
@@ -383,10 +420,10 @@ export const embeddingWorker = new Worker<{ clipId: string; transcript: string }
                 // Generate embedding with timeout
                 const EMBEDDING_TIMEOUT = 60000; // 60 seconds timeout
                 const embeddingPromise = processingService.generateEmbedding(transcript);
-                const timeoutPromise = new Promise<never>((_, reject) => 
+                const timeoutPromise = new Promise<never>((_, reject) =>
                     setTimeout(() => reject(new Error('Embedding generation timeout')), EMBEDDING_TIMEOUT)
                 );
-                
+
                 const embedding = await Promise.race([embeddingPromise, timeoutPromise]) as number[];
 
                 // Validate embedding
@@ -495,7 +532,7 @@ videoWorker.on('failed', (job, error) => {
         stack: error.stack,
         data: job?.data,
     });
-    
+
     // Try to update video status to FAILED if job data is available
     if (job?.data) {
         const { videoId } = job.data as VideoJobData;
@@ -547,7 +584,7 @@ embeddingWorker.on('failed', (job, error) => {
         stack: error.stack,
         data: job?.data,
     });
-    
+
     // Try to continue processing other clips even if one fails
     // The checkVideoCompletion will still run
 });

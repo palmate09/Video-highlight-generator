@@ -390,7 +390,9 @@ export const ModelName = {
   Clip: 'Clip',
   Highlight: 'Highlight',
   HighlightClip: 'HighlightClip',
-  UploadSession: 'UploadSession'
+  UploadSession: 'UploadSession',
+  YouTubeVideo: 'YouTubeVideo',
+  YouTubeClip: 'YouTubeClip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "video" | "clip" | "highlight" | "highlightClip" | "uploadSession"
+    modelProps: "user" | "refreshToken" | "video" | "clip" | "highlight" | "highlightClip" | "uploadSession" | "youTubeVideo" | "youTubeClip"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -872,6 +874,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    YouTubeVideo: {
+      payload: Prisma.$YouTubeVideoPayload<ExtArgs>
+      fields: Prisma.YouTubeVideoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.YouTubeVideoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.YouTubeVideoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        findFirst: {
+          args: Prisma.YouTubeVideoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.YouTubeVideoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        findMany: {
+          args: Prisma.YouTubeVideoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>[]
+        }
+        create: {
+          args: Prisma.YouTubeVideoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        createMany: {
+          args: Prisma.YouTubeVideoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.YouTubeVideoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        update: {
+          args: Prisma.YouTubeVideoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        deleteMany: {
+          args: Prisma.YouTubeVideoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.YouTubeVideoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.YouTubeVideoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeVideoPayload>
+        }
+        aggregate: {
+          args: Prisma.YouTubeVideoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateYouTubeVideo>
+        }
+        groupBy: {
+          args: Prisma.YouTubeVideoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeVideoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.YouTubeVideoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeVideoCountAggregateOutputType> | number
+        }
+      }
+    }
+    YouTubeClip: {
+      payload: Prisma.$YouTubeClipPayload<ExtArgs>
+      fields: Prisma.YouTubeClipFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.YouTubeClipFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.YouTubeClipFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        findFirst: {
+          args: Prisma.YouTubeClipFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.YouTubeClipFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        findMany: {
+          args: Prisma.YouTubeClipFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>[]
+        }
+        create: {
+          args: Prisma.YouTubeClipCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        createMany: {
+          args: Prisma.YouTubeClipCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.YouTubeClipDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        update: {
+          args: Prisma.YouTubeClipUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        deleteMany: {
+          args: Prisma.YouTubeClipDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.YouTubeClipUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.YouTubeClipUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeClipPayload>
+        }
+        aggregate: {
+          args: Prisma.YouTubeClipAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateYouTubeClip>
+        }
+        groupBy: {
+          args: Prisma.YouTubeClipGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeClipGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.YouTubeClipCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeClipCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -987,6 +1121,7 @@ export const HighlightClipScalarFieldEnum = {
   highlightId: 'highlightId',
   clipId: 'clipId',
   videoId: 'videoId',
+  youtubeClipId: 'youtubeClipId',
   order: 'order',
   startTime: 'startTime',
   endTime: 'endTime'
@@ -1011,6 +1146,33 @@ export const UploadSessionScalarFieldEnum = {
 } as const
 
 export type UploadSessionScalarFieldEnum = (typeof UploadSessionScalarFieldEnum)[keyof typeof UploadSessionScalarFieldEnum]
+
+
+export const YouTubeVideoScalarFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId',
+  title: 'title',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type YouTubeVideoScalarFieldEnum = (typeof YouTubeVideoScalarFieldEnum)[keyof typeof YouTubeVideoScalarFieldEnum]
+
+
+export const YouTubeClipScalarFieldEnum = {
+  id: 'id',
+  youtubeVideoId: 'youtubeVideoId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  label: 'label',
+  confidence: 'confidence',
+  transcript: 'transcript',
+  order: 'order',
+  createdAt: 'createdAt'
+} as const
+
+export type YouTubeClipScalarFieldEnum = (typeof YouTubeClipScalarFieldEnum)[keyof typeof YouTubeClipScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1112,7 +1274,8 @@ export const HighlightClipOrderByRelevanceFieldEnum = {
   id: 'id',
   highlightId: 'highlightId',
   clipId: 'clipId',
-  videoId: 'videoId'
+  videoId: 'videoId',
+  youtubeClipId: 'youtubeClipId'
 } as const
 
 export type HighlightClipOrderByRelevanceFieldEnum = (typeof HighlightClipOrderByRelevanceFieldEnum)[keyof typeof HighlightClipOrderByRelevanceFieldEnum]
@@ -1129,6 +1292,26 @@ export const UploadSessionOrderByRelevanceFieldEnum = {
 } as const
 
 export type UploadSessionOrderByRelevanceFieldEnum = (typeof UploadSessionOrderByRelevanceFieldEnum)[keyof typeof UploadSessionOrderByRelevanceFieldEnum]
+
+
+export const YouTubeVideoOrderByRelevanceFieldEnum = {
+  id: 'id',
+  videoId: 'videoId',
+  userId: 'userId',
+  title: 'title'
+} as const
+
+export type YouTubeVideoOrderByRelevanceFieldEnum = (typeof YouTubeVideoOrderByRelevanceFieldEnum)[keyof typeof YouTubeVideoOrderByRelevanceFieldEnum]
+
+
+export const YouTubeClipOrderByRelevanceFieldEnum = {
+  id: 'id',
+  youtubeVideoId: 'youtubeVideoId',
+  label: 'label',
+  transcript: 'transcript'
+} as const
+
+export type YouTubeClipOrderByRelevanceFieldEnum = (typeof YouTubeClipOrderByRelevanceFieldEnum)[keyof typeof YouTubeClipOrderByRelevanceFieldEnum]
 
 
 
@@ -1308,6 +1491,8 @@ export type GlobalOmitConfig = {
   highlight?: Prisma.HighlightOmit
   highlightClip?: Prisma.HighlightClipOmit
   uploadSession?: Prisma.UploadSessionOmit
+  youTubeVideo?: Prisma.YouTubeVideoOmit
+  youTubeClip?: Prisma.YouTubeClipOmit
 }
 
 /* Types for Logging */

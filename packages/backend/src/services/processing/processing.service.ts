@@ -134,6 +134,121 @@ export class ProcessingService {
     }
 
     /**
+     * Check if video needs transcoding to web-compatible format
+     */
+    needsTranscoding(videoPath: string, mimeType?: string): boolean {
+        const ext = path.extname(videoPath).toLowerCase();
+        // These formats need transcoding to MP4 for browser compatibility
+        const needsTranscode = ['.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.mpeg', '.mpg', '.3gp'];
+
+        // Also check MIME type
+        const unsupportedMimeTypes = [
+            'video/x-matroska',
+            'video/x-msvideo',
+            'video/quicktime',
+            'video/x-ms-wmv',
+            'video/x-flv',
+            'video/mpeg',
+            'video/3gpp',
+        ];
+
+        if (mimeType && unsupportedMimeTypes.includes(mimeType)) {
+            return true;
+        }
+
+        return needsTranscode.includes(ext);
+    }
+
+    /**
+     * Transcode video to web-compatible MP4 format (H.264 + AAC)
+     * Returns the path to the transcoded video
+     */
+    async transcodeToMp4(videoPath: string, videoId: string): Promise<{ outputPath: string; filename: string }> {
+        const uploadDir = path.resolve(config.upload.path);
+        const newFilename = `${videoId}.mp4`;
+        const outputPath = path.join(uploadDir, newFilename);
+
+        logger.info(`Transcoding video to MP4: ${videoPath} -> ${outputPath}`);
+        const startTime = Date.now();
+
+        return new Promise((resolve, reject) => {
+            // FFmpeg command for web-compatible MP4:
+            // - H.264 video codec (libx264) with CRF 23 for good quality/size balance
+            // - AAC audio codec with stereo downmix (for 5.1 surround support)
+            // - Fast start for web streaming (moov atom at beginning)
+            // - Preset: medium for balance between speed and compression
+            const ffmpeg = spawn('ffmpeg', [
+                '-i', videoPath,
+                '-c:v', 'libx264',       // H.264 video codec
+                '-preset', 'ultrafast',   // Encoding speed preset (much faster than medium)
+                '-crf', '28',             // Quality (0-51, higher = worse quality/smaller size, 28 is good fallback)
+                '-c:a', 'aac',            // AAC audio codec
+                '-ac', '2',               // Downmix to stereo (fixes 5.1 surround sound issues)
+                '-ar', '44100',           // Standard audio sample rate
+                '-b:a', '128k',           // Audio bitrate
+                '-movflags', '+faststart', // Move moov atom to start for web streaming
+                '-pix_fmt', 'yuv420p',    // Pixel format for compatibility
+                '-y',                      // Overwrite output file
+                outputPath,
+            ]);
+
+            let stderr = '';
+            let lastProgress = '';
+
+            ffmpeg.stderr.on('data', (data) => {
+                stderr += data.toString();
+                const line = data.toString();
+                // Log progress periodically
+                if (line.includes('time=') && line !== lastProgress) {
+                    const timeMatch = line.match(/time=(\d+:\d+:\d+\.\d+)/);
+                    if (timeMatch) {
+                        logger.debug(`Transcoding progress: ${timeMatch[1]}`);
+                        lastProgress = line;
+                    }
+                }
+            });
+
+            ffmpeg.on('error', (error) => {
+                logger.error(`FFmpeg spawn error: ${error.message}`);
+                reject(new Error(`Failed to start transcoding: ${error.message}`));
+            });
+
+            ffmpeg.on('close', async (code) => {
+                const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+
+                if (code === 0) {
+                    // Verify output file exists and has content
+                    try {
+                        const stats = await fs.stat(outputPath);
+                        if (stats.size === 0) {
+                            reject(new Error('Transcoded file is empty'));
+                            return;
+                        }
+
+                        logger.info(`Transcoding complete: ${outputPath} (${(stats.size / (1024 * 1024)).toFixed(2)}MB) in ${duration}s`);
+
+                        // Delete original file after successful transcoding
+                        try {
+                            await fs.unlink(videoPath);
+                            logger.info(`Deleted original file: ${videoPath}`);
+                        } catch (unlinkError: any) {
+                            logger.warn(`Failed to delete original file ${videoPath}: ${unlinkError.message}`);
+                        }
+
+                        resolve({ outputPath, filename: newFilename });
+                    } catch (statError: any) {
+                        reject(new Error(`Failed to verify transcoded file: ${statError.message}`));
+                    }
+                } else {
+                    const errorLines = stderr.split('\n').slice(-10).join('\n');
+                    logger.error(`Transcoding failed (exit code ${code}): ${errorLines}`);
+                    reject(new Error(`Transcoding failed with exit code ${code}`));
+                }
+            });
+        });
+    }
+
+    /**
      * Detect scene changes in video
      * Optimized for faster processing with adaptive settings based on video duration
      */
@@ -150,11 +265,11 @@ export class ProcessingService {
             // Lower fps (5 instead of 10), smaller scale, and add timeout
             const ffmpeg = spawn('ffmpeg', [
                 '-i', videoPath,
-                '-vf', `fps=5,scale=240:-1,select='gt(scene,${threshold})',showinfo`,
+                '-vf', `fps=1,scale=240:-1,select='gt(scene,${threshold})',showinfo`,
                 '-f', 'null',
                 '-',
             ], {
-                timeout: 60000, // 60 second timeout
+                timeout: 120000, // 120 second timeout (increased from 60)
             });
 
             let stderr = '';
@@ -189,12 +304,12 @@ export class ProcessingService {
 
                 // Remove duplicates and sort
                 const uniqueScenes = [...new Set(scenes)].sort((a, b) => a - b);
-                
+
                 // Ensure we have an end scene if duration is known
                 if (duration && uniqueScenes[uniqueScenes.length - 1] < duration) {
                     uniqueScenes.push(duration);
                 }
-                
+
                 resolve(uniqueScenes);
             });
         });
@@ -261,13 +376,13 @@ export class ProcessingService {
     async extractAudio(videoPath: string): Promise<string> {
         // Use absolute path for audio output to avoid path issues
         const audioPath = path.resolve(path.join(this.tempDir, `${uuidv4()}.wav`));
-        
+
         // Ensure temp directory exists
         await fs.mkdir(path.dirname(audioPath), { recursive: true });
-        
+
         return new Promise(async (resolve, reject) => {
             logger.debug(`Starting audio extraction: ${videoPath} -> ${audioPath}`);
-            
+
             const ffmpeg = spawn('ffmpeg', [
                 '-i', videoPath,
                 '-vn', // No video
@@ -281,7 +396,7 @@ export class ProcessingService {
             });
 
             let stderr = '';
-            
+
             ffmpeg.stderr.on('data', (data) => {
                 stderr += data.toString();
                 // Log progress for long operations
@@ -301,7 +416,7 @@ export class ProcessingService {
                     // Wait for file to be fully written to disk with retries
                     let retries = 10;
                     let fileExists = false;
-                    
+
                     while (retries > 0 && !fileExists) {
                         try {
                             // Check if file exists and is not empty
@@ -319,13 +434,13 @@ export class ProcessingService {
                             // File doesn't exist yet, wait a bit
                             logger.debug(`Audio file not found yet, waiting... (retries: ${retries}, error: ${error.message})`);
                         }
-                        
+
                         retries--;
                         if (retries > 0) {
                             await new Promise(res => setTimeout(res, 200)); // Wait 200ms
                         }
                     }
-                    
+
                     if (!fileExists) {
                         logger.error(`Audio file was not created or is empty after 10 retries: ${audioPath}`);
                         reject(new Error(`Audio extraction failed: output file not found or empty after waiting`));
@@ -360,7 +475,7 @@ export class ProcessingService {
         const videoStats = await fs.stat(videoPath);
         const videoSizeMB = videoStats.size / (1024 * 1024);
         const MAX_VIDEO_SIZE_FOR_DIRECT_UPLOAD = 20 * 1024 * 1024; // 20MB - leave buffer for OpenAI's 25MB limit
-        
+
         // Always extract audio for more reliable processing
         // While OpenAI can handle video files, extracting audio:
         // 1. Reduces file size significantly
@@ -374,16 +489,16 @@ export class ProcessingService {
         const audioExtractStart = Date.now();
         audioPath = await this.extractAudio(videoPath);
         const audioExtractTime = ((Date.now() - audioExtractStart) / 1000).toFixed(2);
-        
+
         // Verify audio file exists and is fully written before proceeding
         try {
             await fs.access(audioPath, fs.constants.F_OK);
             const audioStats = await fs.stat(audioPath);
-            
+
             if (audioStats.size === 0) {
                 throw new Error(`Extracted audio file is empty: ${audioPath}`);
             }
-            
+
             const audioSizeMB = audioStats.size / (1024 * 1024);
             logger.info(`Audio extracted in ${audioExtractTime}s, size: ${audioSizeMB.toFixed(2)}MB (reduction: ${((1 - audioStats.size / videoStats.size) * 100).toFixed(1)}%)`);
             filePath = audioPath;
@@ -391,13 +506,13 @@ export class ProcessingService {
             logger.error(`Failed to verify extracted audio file: ${audioPath} - ${error.message}`);
             throw new Error(`Audio file verification failed: ${error.message}`);
         }
-        
+
         try {
             const transcriptionStart = Date.now();
             const result = await provider.transcribe(filePath);
             const transcriptionTime = ((Date.now() - transcriptionStart) / 1000).toFixed(2);
             logger.info(`Transcription completed in ${transcriptionTime}s, segments: ${result.segments?.length || 0}`);
-            
+
             return result;
         } catch (error: any) {
             logger.error(`Transcription failed for video ${videoPath}: ${error.message}`);
@@ -405,7 +520,7 @@ export class ProcessingService {
         } finally {
             // Cleanup audio file only if we extracted it
             if (audioPath) {
-                try { 
+                try {
                     await fs.unlink(audioPath);
                     logger.debug(`Cleaned up temporary audio file: ${audioPath}`);
                 } catch (cleanupError: any) {

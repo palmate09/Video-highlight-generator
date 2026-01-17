@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import type Player from 'video.js/dist/types/player';
-import type  PlayerOptions  from 'video.js/dist/types/player';
+import type PlayerOptions from 'video.js/dist/types/player';
 import 'video.js/dist/video-js.css';
 
 interface ClipMarker {
@@ -31,7 +31,7 @@ export default function VideoJsPlayer({
   onClipClick,
   options,
 }: VideoJsPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<Player | null>(null);
   const markersAddedRef = useRef(false);
 
@@ -49,86 +49,70 @@ export default function VideoJsPlayer({
   /* -----------------------------------------------------
      Initialize Video.js (ONLY ONCE)
   ----------------------------------------------------- */
+
   useEffect(() => {
-    if (!videoRef.current || playerRef.current) return;
-  
-    let rafId: number;
-  
-    const tryInit = () => {
-      const videoEl = videoRef.current;
-      if (!videoEl) return;
-  
-      const isInDOM = document.body.contains(videoEl);
-  
-      if (!isInDOM) {
-        rafId = requestAnimationFrame(tryInit);
-        return;
-      }
-  
-      const player = videojs(videoEl, {
-        controls: true,
-        preload: 'metadata',
-        poster,
-        sources: src
-          ? [{ src, type: getVideoType(src) }]
-          : [],
-        html5: {
-          vhs: { overrideNative: true },
-          nativeVideoTracks: false,
-          nativeAudioTracks: false,
-          nativeTextTracks: false,
-        },
-        ...options,
-      });
-  
-      playerRef.current = player;
-      console.log('✅ Video.js initialized (DOM ready)');
-    };
-  
-    tryInit();
-  
+    if (!videoRef.current || playerRef.current) {
+      return;
+    }
+
+    // create <video-js> element manually (Strict mode safe)
+    const videoEl = document.createElement('video-js');
+    videoEl.classList.add(
+      'video-js',
+      'vjs-big-play-centered',
+      'vjs-default-skin'
+    );
+    videoEl.style.width = '100%';
+    videoEl.style.height = '100%';
+
+    videoRef.current.appendChild(videoEl);
+
+    const player = (playerRef.current = videojs(videoEl, {
+      controls: true,
+      preload: 'auto',
+      poster,
+      fluid: true,
+      responsive: true,
+      sources: src
+        ? [{ src, type: getVideoType(src) }]
+        : [],
+      html5: {
+        vhs: { overrideNative: true },
+        nativeVideoTracks: false,
+        nativeAudioTracks: false,
+        nativeTextTracks: false,
+      },
+      ...options,
+    }));
+
+    console.log('Video.js player initialized:', player);
+
     return () => {
-      cancelAnimationFrame(rafId);
       if (playerRef.current && !playerRef.current.isDisposed()) {
         playerRef.current.dispose();
         playerRef.current = null;
       }
     };
-  }, []);
-  
+  }, []); // Empty dependency array - only run once on mount
 
   /* -----------------------------------------------------
      Update source when `src` changes
   ----------------------------------------------------- */
+
   useEffect(() => {
     const player = playerRef.current;
     if (!player || player.isDisposed() || !src) return;
 
     markersAddedRef.current = false;
 
-    const onError = () => {
-      console.error('Video.js error:', player.error());
-    };
-
-    const onLoadedMetadata = () => {
-      console.log('Metadata loaded, duration:', player.duration());
-    };
-
     player.src({ src, type: getVideoType(src) });
     player.load();
-
-    player.on('error', onError);
-    player.on('loadedmetadata', onLoadedMetadata);
-
-    return () => {
-      player.off('error', onError);
-      player.off('loadedmetadata', onLoadedMetadata);
-    };
   }, [src]);
 
   /* -----------------------------------------------------
      Update poster
   ----------------------------------------------------- */
+
   useEffect(() => {
     const player = playerRef.current;
     if (!player || player.isDisposed()) return;
@@ -141,6 +125,7 @@ export default function VideoJsPlayer({
   /* -----------------------------------------------------
      Clip Markers Logic
   ----------------------------------------------------- */
+
   useEffect(() => {
     const player = playerRef.current;
     if (!player || player.isDisposed() || clips.length === 0) return;
@@ -176,16 +161,16 @@ export default function VideoJsPlayer({
         marker.style.background = 'rgba(14,165,233,0.8)';
         marker.style.cursor = 'pointer';
         marker.style.zIndex = '10';
+
         marker.title =
           clip.label ??
           `${formatTime(clip.startTime)} - ${formatTime(clip.endTime)}`;
 
-        marker.addEventListener('click', e => {
-          e.preventDefault();
+        marker.onclick = e => {
           e.stopPropagation();
           player.currentTime(clip.startTime);
           onClipClick?.(clip);
-        });
+        };
 
         marker.addEventListener('mouseenter', () => {
           marker.style.width = '3px';
@@ -215,15 +200,12 @@ export default function VideoJsPlayer({
   /* -----------------------------------------------------
      Render
   ----------------------------------------------------- */
+
   return (
-    <div data-vjs-player className="w-full h-full">
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered vjs-default-skin"
-        playsInline
-        style={{ width: '100%', height: '100%' }}
-      />
+    <div data-vjs-player className="w-full" style={{ width: '100%' }}>
+      <div ref={videoRef} style={{ width: '100%' }} />
     </div>
+
   );
 }
 

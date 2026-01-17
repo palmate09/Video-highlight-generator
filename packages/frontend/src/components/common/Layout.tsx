@@ -11,12 +11,14 @@ import {
     Sun,
     Moon,
     User,
+    Youtube,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/videos', label: 'Videos', icon: Film },
+    { path: '/youtube', label: 'YouTube Clips', icon: Youtube },
     { path: '/search', label: 'Search', icon: Search },
     { path: '/highlights', label: 'Highlights', icon: Star },
 ];
@@ -70,8 +72,8 @@ export default function Layout() {
                                         key={item.path}
                                         to={item.path}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${isActive
-                                                ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                                                : 'text-dark-300 hover:text-dark-100 hover:bg-dark-800/50'
+                                            ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                                            : 'text-dark-300 hover:text-dark-100 hover:bg-dark-800/50'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
@@ -135,8 +137,8 @@ export default function Layout() {
                                         to={item.path}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${isActive
-                                                ? 'bg-primary-500/20 text-primary-400'
-                                                : 'text-dark-300 hover:bg-dark-800/50'
+                                            ? 'bg-primary-500/20 text-primary-400'
+                                            : 'text-dark-300 hover:bg-dark-800/50'
                                             }`}
                                     >
                                         <Icon className="w-5 h-5" />

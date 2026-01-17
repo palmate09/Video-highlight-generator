@@ -193,6 +193,7 @@ export type UserWhereInput = {
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   videos?: Prisma.VideoListRelationFilter
   highlights?: Prisma.HighlightListRelationFilter
+  youTubeVideos?: Prisma.YouTubeVideoListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -205,6 +206,7 @@ export type UserOrderByWithRelationInput = {
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   videos?: Prisma.VideoOrderByRelationAggregateInput
   highlights?: Prisma.HighlightOrderByRelationAggregateInput
+  youTubeVideos?: Prisma.YouTubeVideoOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -221,6 +223,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   videos?: Prisma.VideoListRelationFilter
   highlights?: Prisma.HighlightListRelationFilter
+  youTubeVideos?: Prisma.YouTubeVideoListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -257,6 +260,7 @@ export type UserCreateInput = {
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   videos?: Prisma.VideoCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -269,6 +273,7 @@ export type UserUncheckedCreateInput = {
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -281,6 +286,7 @@ export type UserUpdateInput = {
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   videos?: Prisma.VideoUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -293,6 +299,7 @@ export type UserUncheckedUpdateInput = {
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -414,6 +421,20 @@ export type UserUpdateOneRequiredWithoutHighlightsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHighlightsInput, Prisma.UserUpdateWithoutHighlightsInput>, Prisma.UserUncheckedUpdateWithoutHighlightsInput>
 }
 
+export type UserCreateNestedOneWithoutYouTubeVideosInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutYouTubeVideosInput, Prisma.UserUncheckedCreateWithoutYouTubeVideosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutYouTubeVideosInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutYouTubeVideosNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutYouTubeVideosInput, Prisma.UserUncheckedCreateWithoutYouTubeVideosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutYouTubeVideosInput
+  upsert?: Prisma.UserUpsertWithoutYouTubeVideosInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutYouTubeVideosInput, Prisma.UserUpdateWithoutYouTubeVideosInput>, Prisma.UserUncheckedUpdateWithoutYouTubeVideosInput>
+}
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
   email: string
@@ -423,6 +444,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   updatedAt?: Date | string
   videos?: Prisma.VideoCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -434,6 +456,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   updatedAt?: Date | string
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -461,6 +484,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   videos?: Prisma.VideoUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -472,6 +496,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   videos?: Prisma.VideoUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutVideosInput = {
@@ -483,6 +508,7 @@ export type UserCreateWithoutVideosInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutVideosInput = {
@@ -494,6 +520,7 @@ export type UserUncheckedCreateWithoutVideosInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutVideosInput = {
@@ -521,6 +548,7 @@ export type UserUpdateWithoutVideosInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVideosInput = {
@@ -532,6 +560,7 @@ export type UserUncheckedUpdateWithoutVideosInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHighlightsInput = {
@@ -543,6 +572,7 @@ export type UserCreateWithoutHighlightsInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   videos?: Prisma.VideoCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHighlightsInput = {
@@ -554,6 +584,7 @@ export type UserUncheckedCreateWithoutHighlightsInput = {
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutUserInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHighlightsInput = {
@@ -581,6 +612,7 @@ export type UserUpdateWithoutHighlightsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   videos?: Prisma.VideoUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHighlightsInput = {
@@ -592,6 +624,71 @@ export type UserUncheckedUpdateWithoutHighlightsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutUserNestedInput
+  youTubeVideos?: Prisma.YouTubeVideoUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutYouTubeVideosInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  videos?: Prisma.VideoCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutYouTubeVideosInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  videos?: Prisma.VideoUncheckedCreateNestedManyWithoutUserInput
+  highlights?: Prisma.HighlightUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutYouTubeVideosInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutYouTubeVideosInput, Prisma.UserUncheckedCreateWithoutYouTubeVideosInput>
+}
+
+export type UserUpsertWithoutYouTubeVideosInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutYouTubeVideosInput, Prisma.UserUncheckedUpdateWithoutYouTubeVideosInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutYouTubeVideosInput, Prisma.UserUncheckedCreateWithoutYouTubeVideosInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutYouTubeVideosInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutYouTubeVideosInput, Prisma.UserUncheckedUpdateWithoutYouTubeVideosInput>
+}
+
+export type UserUpdateWithoutYouTubeVideosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  videos?: Prisma.VideoUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutYouTubeVideosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  videos?: Prisma.VideoUncheckedUpdateManyWithoutUserNestedInput
+  highlights?: Prisma.HighlightUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -603,12 +700,14 @@ export type UserCountOutputType = {
   refreshTokens: number
   videos: number
   highlights: number
+  youTubeVideos: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   videos?: boolean | UserCountOutputTypeCountVideosArgs
   highlights?: boolean | UserCountOutputTypeCountHighlightsArgs
+  youTubeVideos?: boolean | UserCountOutputTypeCountYouTubeVideosArgs
 }
 
 /**
@@ -642,6 +741,13 @@ export type UserCountOutputTypeCountHighlightsArgs<ExtArgs extends runtime.Types
   where?: Prisma.HighlightWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountYouTubeVideosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.YouTubeVideoWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -653,6 +759,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   videos?: boolean | Prisma.User$videosArgs<ExtArgs>
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
+  youTubeVideos?: boolean | Prisma.User$youTubeVideosArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -672,6 +779,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   videos?: boolean | Prisma.User$videosArgs<ExtArgs>
   highlights?: boolean | Prisma.User$highlightsArgs<ExtArgs>
+  youTubeVideos?: boolean | Prisma.User$youTubeVideosArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -681,6 +789,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     videos: Prisma.$VideoPayload<ExtArgs>[]
     highlights: Prisma.$HighlightPayload<ExtArgs>[]
+    youTubeVideos: Prisma.$YouTubeVideoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1032,6 +1141,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   videos<T extends Prisma.User$videosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$videosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VideoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   highlights<T extends Prisma.User$highlightsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$highlightsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  youTubeVideos<T extends Prisma.User$youTubeVideosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$youTubeVideosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$YouTubeVideoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1479,6 +1589,30 @@ export type User$highlightsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.HighlightScalarFieldEnum | Prisma.HighlightScalarFieldEnum[]
+}
+
+/**
+ * User.youTubeVideos
+ */
+export type User$youTubeVideosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the YouTubeVideo
+   */
+  select?: Prisma.YouTubeVideoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the YouTubeVideo
+   */
+  omit?: Prisma.YouTubeVideoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.YouTubeVideoInclude<ExtArgs> | null
+  where?: Prisma.YouTubeVideoWhereInput
+  orderBy?: Prisma.YouTubeVideoOrderByWithRelationInput | Prisma.YouTubeVideoOrderByWithRelationInput[]
+  cursor?: Prisma.YouTubeVideoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.YouTubeVideoScalarFieldEnum | Prisma.YouTubeVideoScalarFieldEnum[]
 }
 
 /**

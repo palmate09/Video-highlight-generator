@@ -31,6 +31,7 @@ export class HighlightService {
         clips: Array<{
             clipId?: string;
             videoId?: string;
+            youtubeClipId?: string;
             startTime: number;
             endTime: number;
         }>
@@ -50,6 +51,7 @@ export class HighlightService {
                     create: clips.map((clip, index) => ({
                         clipId: clip.clipId || null,
                         videoId: clip.videoId || null,
+                        youtubeClipId: clip.youtubeClipId || null,
                         order: index,
                         startTime: clip.startTime,
                         endTime: clip.endTime,
@@ -159,8 +161,13 @@ export class HighlightService {
                 clips: {
                     orderBy: { order: 'asc' },
                     include: {
-                        clip: true,
+                        clip: {
+                            include: { video: true }
+                        },
                         video: true,
+                        youtubeClip: {
+                            include: { youtubeVideo: true }
+                        }
                     },
                 },
             },
@@ -178,19 +185,36 @@ export class HighlightService {
 
         try {
             // Extract individual clips
-            const clipPaths: string[] = [];
 
-            for (const hClip of highlight.clips) {
+
+            // Process clips in parallel
+            const clipPromises = highlight.clips.map(async (hClip) => {
+                // Handle YouTube Clips
+                if (hClip.youtubeClip?.youtubeVideo) {
+                    const videoId = hClip.youtubeClip.youtubeVideo.videoId;
+                    const clipPath = path.join(this.tempDir, `${uuidv4()}.mp4`);
+                    logger.info(`Downloading YouTube clip: ${videoId} (${hClip.startTime}-${hClip.endTime})`);
+                    await this.downloadYouTubeClip(videoId, clipPath, hClip.startTime, hClip.endTime);
+                    return { path: clipPath, order: hClip.order };
+                }
+
                 const videoPath = hClip.clip?.video?.path || hClip.video?.path;
                 if (!videoPath) {
                     logger.warn(`No video path for highlight clip ${hClip.id}`);
-                    continue;
+                    return null;
                 }
 
                 const clipPath = path.join(this.tempDir, `${uuidv4()}.mp4`);
                 await this.extractClip(videoPath, clipPath, hClip.startTime, hClip.endTime);
-                clipPaths.push(clipPath);
-            }
+                return { path: clipPath, order: hClip.order };
+            });
+
+            const results = await Promise.all(clipPromises);
+
+            // Filter out failures and ensure correct order (although Promise.all preserves order, the map index matches)
+            const clipPaths = results
+                .filter((r): r is { path: string; order: number } => r !== null)
+                .map(r => r.path);
 
             if (clipPaths.length === 0) {
                 throw new Error('No valid clips to process');
@@ -234,6 +258,45 @@ export class HighlightService {
     }
 
     /**
+     * Download clip from YouTube using yt-dlp
+     */
+    private async downloadYouTubeClip(
+        videoId: string,
+        outputPath: string,
+        startTime: number,
+        endTime: number
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // Use yt-dlp to download specific section
+            // --download-sections "*start-end"
+            // We force keyframes at cuts for precision re-encoding later if needed, 
+            // but for download we want best compatible format (mp4+aac)
+            const range = `*${startTime}-${endTime}`;
+
+            const ytdlp = spawn('yt-dlp', [
+                '--download-sections', range,
+                '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+                '--force-keyframes-at-cuts',
+                `https://www.youtube.com/watch?v=${videoId}`,
+                '-o', outputPath,
+            ]);
+
+            let stderr = '';
+            ytdlp.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            ytdlp.on('close', (code) => {
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject(new Error(`YouTube download failed: ${stderr}`));
+                }
+            });
+        });
+    }
+
+    /**
      * Extract clip from video
      */
     private async extractClip(
@@ -251,7 +314,7 @@ export class HighlightService {
                 '-t', duration.toString(),
                 '-c:v', 'libx264',
                 '-c:a', 'aac',
-                '-preset', 'fast',
+                '-preset', 'veryfast',
                 '-crf', '22',
                 '-y',
                 outputPath,
@@ -298,7 +361,7 @@ export class HighlightService {
                     '-i', concatFile,
                     '-c:v', 'libx264',
                     '-c:a', 'aac',
-                    '-preset', 'fast',
+                    '-preset', 'veryfast',
                     '-crf', '22',
                     '-y',
                     outputPath,

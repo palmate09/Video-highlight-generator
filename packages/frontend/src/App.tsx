@@ -10,6 +10,7 @@ import VideoDetailPage from '@/pages/VideoDetailPage';
 import SearchPage from '@/pages/SearchPage';
 import HighlightPage from '@/pages/HighlightPage';
 import HighlightListPage from '@/pages/HighlightListPage';
+import YouTubeClipPage from '@/pages/YouTubeClipPage';
 
 export default function App() {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -36,6 +37,7 @@ export default function App() {
                     <Route path="/highlights" element={<HighlightListPage />} />
                     <Route path="/highlights/new" element={<HighlightPage />} />
                     <Route path="/highlights/:id" element={<HighlightPage />} />
+                    <Route path="/youtube" element={<YouTubeClipPage />} />
                 </Route>
             </Route>
 
@@ -45,3 +47,4 @@ export default function App() {
         </Routes>
     );
 }
+

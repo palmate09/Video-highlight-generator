@@ -43,6 +43,7 @@ export type HighlightClipMinAggregateOutputType = {
   highlightId: string | null
   clipId: string | null
   videoId: string | null
+  youtubeClipId: string | null
   order: number | null
   startTime: number | null
   endTime: number | null
@@ -53,6 +54,7 @@ export type HighlightClipMaxAggregateOutputType = {
   highlightId: string | null
   clipId: string | null
   videoId: string | null
+  youtubeClipId: string | null
   order: number | null
   startTime: number | null
   endTime: number | null
@@ -63,6 +65,7 @@ export type HighlightClipCountAggregateOutputType = {
   highlightId: number
   clipId: number
   videoId: number
+  youtubeClipId: number
   order: number
   startTime: number
   endTime: number
@@ -87,6 +90,7 @@ export type HighlightClipMinAggregateInputType = {
   highlightId?: true
   clipId?: true
   videoId?: true
+  youtubeClipId?: true
   order?: true
   startTime?: true
   endTime?: true
@@ -97,6 +101,7 @@ export type HighlightClipMaxAggregateInputType = {
   highlightId?: true
   clipId?: true
   videoId?: true
+  youtubeClipId?: true
   order?: true
   startTime?: true
   endTime?: true
@@ -107,6 +112,7 @@ export type HighlightClipCountAggregateInputType = {
   highlightId?: true
   clipId?: true
   videoId?: true
+  youtubeClipId?: true
   order?: true
   startTime?: true
   endTime?: true
@@ -204,6 +210,7 @@ export type HighlightClipGroupByOutputType = {
   highlightId: string
   clipId: string | null
   videoId: string | null
+  youtubeClipId: string | null
   order: number
   startTime: number
   endTime: number
@@ -237,12 +244,14 @@ export type HighlightClipWhereInput = {
   highlightId?: Prisma.StringFilter<"HighlightClip"> | string
   clipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   videoId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
+  youtubeClipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   order?: Prisma.IntFilter<"HighlightClip"> | number
   startTime?: Prisma.FloatFilter<"HighlightClip"> | number
   endTime?: Prisma.FloatFilter<"HighlightClip"> | number
   highlight?: Prisma.XOR<Prisma.HighlightScalarRelationFilter, Prisma.HighlightWhereInput>
   clip?: Prisma.XOR<Prisma.ClipNullableScalarRelationFilter, Prisma.ClipWhereInput> | null
   video?: Prisma.XOR<Prisma.VideoNullableScalarRelationFilter, Prisma.VideoWhereInput> | null
+  youtubeClip?: Prisma.XOR<Prisma.YouTubeClipNullableScalarRelationFilter, Prisma.YouTubeClipWhereInput> | null
 }
 
 export type HighlightClipOrderByWithRelationInput = {
@@ -250,12 +259,14 @@ export type HighlightClipOrderByWithRelationInput = {
   highlightId?: Prisma.SortOrder
   clipId?: Prisma.SortOrderInput | Prisma.SortOrder
   videoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  youtubeClipId?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   highlight?: Prisma.HighlightOrderByWithRelationInput
   clip?: Prisma.ClipOrderByWithRelationInput
   video?: Prisma.VideoOrderByWithRelationInput
+  youtubeClip?: Prisma.YouTubeClipOrderByWithRelationInput
   _relevance?: Prisma.HighlightClipOrderByRelevanceInput
 }
 
@@ -267,12 +278,14 @@ export type HighlightClipWhereUniqueInput = Prisma.AtLeast<{
   highlightId?: Prisma.StringFilter<"HighlightClip"> | string
   clipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   videoId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
+  youtubeClipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   order?: Prisma.IntFilter<"HighlightClip"> | number
   startTime?: Prisma.FloatFilter<"HighlightClip"> | number
   endTime?: Prisma.FloatFilter<"HighlightClip"> | number
   highlight?: Prisma.XOR<Prisma.HighlightScalarRelationFilter, Prisma.HighlightWhereInput>
   clip?: Prisma.XOR<Prisma.ClipNullableScalarRelationFilter, Prisma.ClipWhereInput> | null
   video?: Prisma.XOR<Prisma.VideoNullableScalarRelationFilter, Prisma.VideoWhereInput> | null
+  youtubeClip?: Prisma.XOR<Prisma.YouTubeClipNullableScalarRelationFilter, Prisma.YouTubeClipWhereInput> | null
 }, "id">
 
 export type HighlightClipOrderByWithAggregationInput = {
@@ -280,6 +293,7 @@ export type HighlightClipOrderByWithAggregationInput = {
   highlightId?: Prisma.SortOrder
   clipId?: Prisma.SortOrderInput | Prisma.SortOrder
   videoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  youtubeClipId?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -298,6 +312,7 @@ export type HighlightClipScalarWhereWithAggregatesInput = {
   highlightId?: Prisma.StringWithAggregatesFilter<"HighlightClip"> | string
   clipId?: Prisma.StringNullableWithAggregatesFilter<"HighlightClip"> | string | null
   videoId?: Prisma.StringNullableWithAggregatesFilter<"HighlightClip"> | string | null
+  youtubeClipId?: Prisma.StringNullableWithAggregatesFilter<"HighlightClip"> | string | null
   order?: Prisma.IntWithAggregatesFilter<"HighlightClip"> | number
   startTime?: Prisma.FloatWithAggregatesFilter<"HighlightClip"> | number
   endTime?: Prisma.FloatWithAggregatesFilter<"HighlightClip"> | number
@@ -311,6 +326,7 @@ export type HighlightClipCreateInput = {
   highlight: Prisma.HighlightCreateNestedOneWithoutClipsInput
   clip?: Prisma.ClipCreateNestedOneWithoutHighlightsInput
   video?: Prisma.VideoCreateNestedOneWithoutHighlightsInput
+  youtubeClip?: Prisma.YouTubeClipCreateNestedOneWithoutHighlightsInput
 }
 
 export type HighlightClipUncheckedCreateInput = {
@@ -318,6 +334,7 @@ export type HighlightClipUncheckedCreateInput = {
   highlightId: string
   clipId?: string | null
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -331,6 +348,7 @@ export type HighlightClipUpdateInput = {
   highlight?: Prisma.HighlightUpdateOneRequiredWithoutClipsNestedInput
   clip?: Prisma.ClipUpdateOneWithoutHighlightsNestedInput
   video?: Prisma.VideoUpdateOneWithoutHighlightsNestedInput
+  youtubeClip?: Prisma.YouTubeClipUpdateOneWithoutHighlightsNestedInput
 }
 
 export type HighlightClipUncheckedUpdateInput = {
@@ -338,6 +356,7 @@ export type HighlightClipUncheckedUpdateInput = {
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -348,6 +367,7 @@ export type HighlightClipCreateManyInput = {
   highlightId: string
   clipId?: string | null
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -365,6 +385,7 @@ export type HighlightClipUncheckedUpdateManyInput = {
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -391,6 +412,7 @@ export type HighlightClipCountOrderByAggregateInput = {
   highlightId?: Prisma.SortOrder
   clipId?: Prisma.SortOrder
   videoId?: Prisma.SortOrder
+  youtubeClipId?: Prisma.SortOrder
   order?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -407,6 +429,7 @@ export type HighlightClipMaxOrderByAggregateInput = {
   highlightId?: Prisma.SortOrder
   clipId?: Prisma.SortOrder
   videoId?: Prisma.SortOrder
+  youtubeClipId?: Prisma.SortOrder
   order?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -417,6 +440,7 @@ export type HighlightClipMinOrderByAggregateInput = {
   highlightId?: Prisma.SortOrder
   clipId?: Prisma.SortOrder
   videoId?: Prisma.SortOrder
+  youtubeClipId?: Prisma.SortOrder
   order?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -562,6 +586,48 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type HighlightClipCreateNestedManyWithoutYoutubeClipInput = {
+  create?: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput> | Prisma.HighlightClipCreateWithoutYoutubeClipInput[] | Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput[]
+  connectOrCreate?: Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput | Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput[]
+  createMany?: Prisma.HighlightClipCreateManyYoutubeClipInputEnvelope
+  connect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+}
+
+export type HighlightClipUncheckedCreateNestedManyWithoutYoutubeClipInput = {
+  create?: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput> | Prisma.HighlightClipCreateWithoutYoutubeClipInput[] | Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput[]
+  connectOrCreate?: Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput | Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput[]
+  createMany?: Prisma.HighlightClipCreateManyYoutubeClipInputEnvelope
+  connect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+}
+
+export type HighlightClipUpdateManyWithoutYoutubeClipNestedInput = {
+  create?: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput> | Prisma.HighlightClipCreateWithoutYoutubeClipInput[] | Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput[]
+  connectOrCreate?: Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput | Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput[]
+  upsert?: Prisma.HighlightClipUpsertWithWhereUniqueWithoutYoutubeClipInput | Prisma.HighlightClipUpsertWithWhereUniqueWithoutYoutubeClipInput[]
+  createMany?: Prisma.HighlightClipCreateManyYoutubeClipInputEnvelope
+  set?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  disconnect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  delete?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  connect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  update?: Prisma.HighlightClipUpdateWithWhereUniqueWithoutYoutubeClipInput | Prisma.HighlightClipUpdateWithWhereUniqueWithoutYoutubeClipInput[]
+  updateMany?: Prisma.HighlightClipUpdateManyWithWhereWithoutYoutubeClipInput | Prisma.HighlightClipUpdateManyWithWhereWithoutYoutubeClipInput[]
+  deleteMany?: Prisma.HighlightClipScalarWhereInput | Prisma.HighlightClipScalarWhereInput[]
+}
+
+export type HighlightClipUncheckedUpdateManyWithoutYoutubeClipNestedInput = {
+  create?: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput> | Prisma.HighlightClipCreateWithoutYoutubeClipInput[] | Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput[]
+  connectOrCreate?: Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput | Prisma.HighlightClipCreateOrConnectWithoutYoutubeClipInput[]
+  upsert?: Prisma.HighlightClipUpsertWithWhereUniqueWithoutYoutubeClipInput | Prisma.HighlightClipUpsertWithWhereUniqueWithoutYoutubeClipInput[]
+  createMany?: Prisma.HighlightClipCreateManyYoutubeClipInputEnvelope
+  set?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  disconnect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  delete?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  connect?: Prisma.HighlightClipWhereUniqueInput | Prisma.HighlightClipWhereUniqueInput[]
+  update?: Prisma.HighlightClipUpdateWithWhereUniqueWithoutYoutubeClipInput | Prisma.HighlightClipUpdateWithWhereUniqueWithoutYoutubeClipInput[]
+  updateMany?: Prisma.HighlightClipUpdateManyWithWhereWithoutYoutubeClipInput | Prisma.HighlightClipUpdateManyWithWhereWithoutYoutubeClipInput[]
+  deleteMany?: Prisma.HighlightClipScalarWhereInput | Prisma.HighlightClipScalarWhereInput[]
+}
+
 export type HighlightClipCreateWithoutVideoInput = {
   id?: string
   order: number
@@ -569,12 +635,14 @@ export type HighlightClipCreateWithoutVideoInput = {
   endTime: number
   highlight: Prisma.HighlightCreateNestedOneWithoutClipsInput
   clip?: Prisma.ClipCreateNestedOneWithoutHighlightsInput
+  youtubeClip?: Prisma.YouTubeClipCreateNestedOneWithoutHighlightsInput
 }
 
 export type HighlightClipUncheckedCreateWithoutVideoInput = {
   id?: string
   highlightId: string
   clipId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -614,6 +682,7 @@ export type HighlightClipScalarWhereInput = {
   highlightId?: Prisma.StringFilter<"HighlightClip"> | string
   clipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   videoId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
+  youtubeClipId?: Prisma.StringNullableFilter<"HighlightClip"> | string | null
   order?: Prisma.IntFilter<"HighlightClip"> | number
   startTime?: Prisma.FloatFilter<"HighlightClip"> | number
   endTime?: Prisma.FloatFilter<"HighlightClip"> | number
@@ -626,12 +695,14 @@ export type HighlightClipCreateWithoutClipInput = {
   endTime: number
   highlight: Prisma.HighlightCreateNestedOneWithoutClipsInput
   video?: Prisma.VideoCreateNestedOneWithoutHighlightsInput
+  youtubeClip?: Prisma.YouTubeClipCreateNestedOneWithoutHighlightsInput
 }
 
 export type HighlightClipUncheckedCreateWithoutClipInput = {
   id?: string
   highlightId: string
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -670,12 +741,14 @@ export type HighlightClipCreateWithoutHighlightInput = {
   endTime: number
   clip?: Prisma.ClipCreateNestedOneWithoutHighlightsInput
   video?: Prisma.VideoCreateNestedOneWithoutHighlightsInput
+  youtubeClip?: Prisma.YouTubeClipCreateNestedOneWithoutHighlightsInput
 }
 
 export type HighlightClipUncheckedCreateWithoutHighlightInput = {
   id?: string
   clipId?: string | null
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -707,10 +780,57 @@ export type HighlightClipUpdateManyWithWhereWithoutHighlightInput = {
   data: Prisma.XOR<Prisma.HighlightClipUpdateManyMutationInput, Prisma.HighlightClipUncheckedUpdateManyWithoutHighlightInput>
 }
 
+export type HighlightClipCreateWithoutYoutubeClipInput = {
+  id?: string
+  order: number
+  startTime: number
+  endTime: number
+  highlight: Prisma.HighlightCreateNestedOneWithoutClipsInput
+  clip?: Prisma.ClipCreateNestedOneWithoutHighlightsInput
+  video?: Prisma.VideoCreateNestedOneWithoutHighlightsInput
+}
+
+export type HighlightClipUncheckedCreateWithoutYoutubeClipInput = {
+  id?: string
+  highlightId: string
+  clipId?: string | null
+  videoId?: string | null
+  order: number
+  startTime: number
+  endTime: number
+}
+
+export type HighlightClipCreateOrConnectWithoutYoutubeClipInput = {
+  where: Prisma.HighlightClipWhereUniqueInput
+  create: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput>
+}
+
+export type HighlightClipCreateManyYoutubeClipInputEnvelope = {
+  data: Prisma.HighlightClipCreateManyYoutubeClipInput | Prisma.HighlightClipCreateManyYoutubeClipInput[]
+  skipDuplicates?: boolean
+}
+
+export type HighlightClipUpsertWithWhereUniqueWithoutYoutubeClipInput = {
+  where: Prisma.HighlightClipWhereUniqueInput
+  update: Prisma.XOR<Prisma.HighlightClipUpdateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedUpdateWithoutYoutubeClipInput>
+  create: Prisma.XOR<Prisma.HighlightClipCreateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedCreateWithoutYoutubeClipInput>
+}
+
+export type HighlightClipUpdateWithWhereUniqueWithoutYoutubeClipInput = {
+  where: Prisma.HighlightClipWhereUniqueInput
+  data: Prisma.XOR<Prisma.HighlightClipUpdateWithoutYoutubeClipInput, Prisma.HighlightClipUncheckedUpdateWithoutYoutubeClipInput>
+}
+
+export type HighlightClipUpdateManyWithWhereWithoutYoutubeClipInput = {
+  where: Prisma.HighlightClipScalarWhereInput
+  data: Prisma.XOR<Prisma.HighlightClipUpdateManyMutationInput, Prisma.HighlightClipUncheckedUpdateManyWithoutYoutubeClipInput>
+}
+
 export type HighlightClipCreateManyVideoInput = {
   id?: string
   highlightId: string
   clipId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -723,12 +843,14 @@ export type HighlightClipUpdateWithoutVideoInput = {
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
   highlight?: Prisma.HighlightUpdateOneRequiredWithoutClipsNestedInput
   clip?: Prisma.ClipUpdateOneWithoutHighlightsNestedInput
+  youtubeClip?: Prisma.YouTubeClipUpdateOneWithoutHighlightsNestedInput
 }
 
 export type HighlightClipUncheckedUpdateWithoutVideoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -738,6 +860,7 @@ export type HighlightClipUncheckedUpdateManyWithoutVideoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -747,6 +870,7 @@ export type HighlightClipCreateManyClipInput = {
   id?: string
   highlightId: string
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -759,12 +883,14 @@ export type HighlightClipUpdateWithoutClipInput = {
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
   highlight?: Prisma.HighlightUpdateOneRequiredWithoutClipsNestedInput
   video?: Prisma.VideoUpdateOneWithoutHighlightsNestedInput
+  youtubeClip?: Prisma.YouTubeClipUpdateOneWithoutHighlightsNestedInput
 }
 
 export type HighlightClipUncheckedUpdateWithoutClipInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -774,6 +900,7 @@ export type HighlightClipUncheckedUpdateManyWithoutClipInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -783,6 +910,7 @@ export type HighlightClipCreateManyHighlightInput = {
   id?: string
   clipId?: string | null
   videoId?: string | null
+  youtubeClipId?: string | null
   order: number
   startTime: number
   endTime: number
@@ -795,12 +923,14 @@ export type HighlightClipUpdateWithoutHighlightInput = {
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
   clip?: Prisma.ClipUpdateOneWithoutHighlightsNestedInput
   video?: Prisma.VideoUpdateOneWithoutHighlightsNestedInput
+  youtubeClip?: Prisma.YouTubeClipUpdateOneWithoutHighlightsNestedInput
 }
 
 export type HighlightClipUncheckedUpdateWithoutHighlightInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.FloatFieldUpdateOperationsInput | number
   endTime?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -808,6 +938,47 @@ export type HighlightClipUncheckedUpdateWithoutHighlightInput = {
 
 export type HighlightClipUncheckedUpdateManyWithoutHighlightInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  youtubeClipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.FloatFieldUpdateOperationsInput | number
+  endTime?: Prisma.FloatFieldUpdateOperationsInput | number
+}
+
+export type HighlightClipCreateManyYoutubeClipInput = {
+  id?: string
+  highlightId: string
+  clipId?: string | null
+  videoId?: string | null
+  order: number
+  startTime: number
+  endTime: number
+}
+
+export type HighlightClipUpdateWithoutYoutubeClipInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.FloatFieldUpdateOperationsInput | number
+  endTime?: Prisma.FloatFieldUpdateOperationsInput | number
+  highlight?: Prisma.HighlightUpdateOneRequiredWithoutClipsNestedInput
+  clip?: Prisma.ClipUpdateOneWithoutHighlightsNestedInput
+  video?: Prisma.VideoUpdateOneWithoutHighlightsNestedInput
+}
+
+export type HighlightClipUncheckedUpdateWithoutYoutubeClipInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  highlightId?: Prisma.StringFieldUpdateOperationsInput | string
+  clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.FloatFieldUpdateOperationsInput | number
+  endTime?: Prisma.FloatFieldUpdateOperationsInput | number
+}
+
+export type HighlightClipUncheckedUpdateManyWithoutYoutubeClipInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  highlightId?: Prisma.StringFieldUpdateOperationsInput | string
   clipId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -822,12 +993,14 @@ export type HighlightClipSelect<ExtArgs extends runtime.Types.Extensions.Interna
   highlightId?: boolean
   clipId?: boolean
   videoId?: boolean
+  youtubeClipId?: boolean
   order?: boolean
   startTime?: boolean
   endTime?: boolean
   highlight?: boolean | Prisma.HighlightDefaultArgs<ExtArgs>
   clip?: boolean | Prisma.HighlightClip$clipArgs<ExtArgs>
   video?: boolean | Prisma.HighlightClip$videoArgs<ExtArgs>
+  youtubeClip?: boolean | Prisma.HighlightClip$youtubeClipArgs<ExtArgs>
 }, ExtArgs["result"]["highlightClip"]>
 
 
@@ -837,16 +1010,18 @@ export type HighlightClipSelectScalar = {
   highlightId?: boolean
   clipId?: boolean
   videoId?: boolean
+  youtubeClipId?: boolean
   order?: boolean
   startTime?: boolean
   endTime?: boolean
 }
 
-export type HighlightClipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "highlightId" | "clipId" | "videoId" | "order" | "startTime" | "endTime", ExtArgs["result"]["highlightClip"]>
+export type HighlightClipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "highlightId" | "clipId" | "videoId" | "youtubeClipId" | "order" | "startTime" | "endTime", ExtArgs["result"]["highlightClip"]>
 export type HighlightClipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   highlight?: boolean | Prisma.HighlightDefaultArgs<ExtArgs>
   clip?: boolean | Prisma.HighlightClip$clipArgs<ExtArgs>
   video?: boolean | Prisma.HighlightClip$videoArgs<ExtArgs>
+  youtubeClip?: boolean | Prisma.HighlightClip$youtubeClipArgs<ExtArgs>
 }
 
 export type $HighlightClipPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -855,12 +1030,14 @@ export type $HighlightClipPayload<ExtArgs extends runtime.Types.Extensions.Inter
     highlight: Prisma.$HighlightPayload<ExtArgs>
     clip: Prisma.$ClipPayload<ExtArgs> | null
     video: Prisma.$VideoPayload<ExtArgs> | null
+    youtubeClip: Prisma.$YouTubeClipPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     highlightId: string
     clipId: string | null
     videoId: string | null
+    youtubeClipId: string | null
     order: number
     startTime: number
     endTime: number
@@ -1207,6 +1384,7 @@ export interface Prisma__HighlightClipClient<T, Null = never, ExtArgs extends ru
   highlight<T extends Prisma.HighlightDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HighlightDefaultArgs<ExtArgs>>): Prisma.Prisma__HighlightClient<runtime.Types.Result.GetResult<Prisma.$HighlightPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   clip<T extends Prisma.HighlightClip$clipArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HighlightClip$clipArgs<ExtArgs>>): Prisma.Prisma__ClipClient<runtime.Types.Result.GetResult<Prisma.$ClipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   video<T extends Prisma.HighlightClip$videoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HighlightClip$videoArgs<ExtArgs>>): Prisma.Prisma__VideoClient<runtime.Types.Result.GetResult<Prisma.$VideoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  youtubeClip<T extends Prisma.HighlightClip$youtubeClipArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HighlightClip$youtubeClipArgs<ExtArgs>>): Prisma.Prisma__YouTubeClipClient<runtime.Types.Result.GetResult<Prisma.$YouTubeClipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1240,6 +1418,7 @@ export interface HighlightClipFieldRefs {
   readonly highlightId: Prisma.FieldRef<"HighlightClip", 'String'>
   readonly clipId: Prisma.FieldRef<"HighlightClip", 'String'>
   readonly videoId: Prisma.FieldRef<"HighlightClip", 'String'>
+  readonly youtubeClipId: Prisma.FieldRef<"HighlightClip", 'String'>
   readonly order: Prisma.FieldRef<"HighlightClip", 'Int'>
   readonly startTime: Prisma.FieldRef<"HighlightClip", 'Float'>
   readonly endTime: Prisma.FieldRef<"HighlightClip", 'Float'>
@@ -1621,6 +1800,25 @@ export type HighlightClip$videoArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.VideoInclude<ExtArgs> | null
   where?: Prisma.VideoWhereInput
+}
+
+/**
+ * HighlightClip.youtubeClip
+ */
+export type HighlightClip$youtubeClipArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the YouTubeClip
+   */
+  select?: Prisma.YouTubeClipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the YouTubeClip
+   */
+  omit?: Prisma.YouTubeClipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.YouTubeClipInclude<ExtArgs> | null
+  where?: Prisma.YouTubeClipWhereInput
 }
 
 /**

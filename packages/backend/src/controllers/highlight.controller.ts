@@ -10,6 +10,8 @@ const createHighlightSchema = z.object({
     clips: z.array(z.object({
         clipId: z.string().optional(),
         videoId: z.string().optional(),
+        youtubeClipId: z.string().optional(),
+        youtubeVideoId: z.string().optional(),
         startTime: z.number().min(0),
         endTime: z.number().min(0),
     })).min(1, 'At least one clip is required'),

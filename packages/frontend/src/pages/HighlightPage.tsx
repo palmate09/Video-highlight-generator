@@ -94,6 +94,10 @@ export default function HighlightPage() {
         queryKey: ['highlight', id],
         queryFn: () => highlightApi.getHighlight(id!),
         enabled: !!id,
+        refetchInterval: (query) => {
+            const status = query.state.data?.data?.data?.status;
+            return status === 'PROCESSING' || status === 'PENDING' ? 3000 : false;
+        },
     });
 
     const highlight = highlightData?.data?.data;

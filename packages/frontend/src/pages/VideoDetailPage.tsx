@@ -122,7 +122,7 @@ export default function VideoDetailPage() {
                 {/* Player */}
                 <div className="lg:col-span-2">
                     <div className="glass-card overflow-hidden">
-                        <div className="relative aspect-video bg-dark-900">
+                        <div className={`relative bg-dark-900 ${video.status !== 'READY' ? 'aspect-video' : ''}`}>
                             {video.status === 'READY' ? (
                                 <VideoJsPlayer
                                     key={`video-${video.id}`}
@@ -222,7 +222,7 @@ export default function VideoDetailPage() {
                     <h2 className="text-xl font-semibold text-dark-100">
                         Detected Clips ({clipsTotal})
                     </h2>
-                    
+
                     {clipsLoading ? (
                         <div className="flex items-center justify-center py-12">
                             <Loader2 className="w-6 h-6 text-primary-400 animate-spin" />
@@ -231,8 +231,8 @@ export default function VideoDetailPage() {
                         <>
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {clips.map((clip: any, i: number) => (
-                                    <div 
-                                        key={clip.id} 
+                                    <div
+                                        key={clip.id}
                                         className={`glass-card p-4 space-y-3 transition-all ${selectedClipId === clip.id ? 'ring-2 ring-primary-500/50' : ''}`}
                                     >
                                         <div className="flex items-center justify-between">
@@ -263,7 +263,7 @@ export default function VideoDetailPage() {
                                     </div>
                                 ))}
                             </div>
-                            
+
                             {/* Pagination */}
                             {clipsTotalPages > 1 && (
                                 <div className="flex items-center justify-between pt-4">

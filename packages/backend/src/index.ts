@@ -16,6 +16,7 @@ import videoRoutes from './routes/video.routes';
 import uploadRoutes from './routes/upload.routes';
 import searchRoutes from './routes/search.routes';
 import highlightRoutes from './routes/highlight.routes';
+import youtubeRoutes from './routes/youtube.routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error.middleware';
@@ -106,7 +107,7 @@ app.use('/uploads', express.static(uploadDir, {
         res.set('Access-Control-Allow-Origin', '*');
         res.set('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
         res.set('Access-Control-Allow-Headers', 'Range, Content-Type');
-        
+
         // Set proper content-type for video files
         if (filePath.endsWith('.mp4')) {
             res.set('Content-Type', 'video/mp4');
@@ -126,7 +127,7 @@ app.use('/output', express.static(outputDir, {
         // Set CORS headers
         res.set('Access-Control-Allow-Origin', '*');
         res.set('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-        
+
         // Set proper content-type for images
         if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
             res.set('Content-Type', 'image/jpeg');
@@ -154,6 +155,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/highlights', highlightRoutes);
+app.use('/api/youtube', youtubeRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -171,7 +173,7 @@ app.listen(config.port, '0.0.0.0', async () => {
     logger.info(`🔧 Environment: ${config.nodeEnv}`);
     logger.info(`🎤 Transcription provider: ${config.providers.transcription}`);
     logger.info(`🧠 Embedding provider: ${config.providers.embedding}`);
-    
+
     // Log OpenAI configuration status
     if (config.providers.transcription === 'openai' || config.providers.embedding === 'openai') {
         if (config.openai.apiKey) {
@@ -181,7 +183,7 @@ app.listen(config.port, '0.0.0.0', async () => {
             logger.warn(`⚠️  OpenAI API Key is missing but OpenAI provider is selected!`);
         }
     }
-    
+
     // Pre-load embedding model in background to avoid first-time delays
     if (config.providers.embedding === 'transformers') {
         preloadEmbeddingModel().catch((error: any) => {
